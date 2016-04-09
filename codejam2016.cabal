@@ -18,6 +18,7 @@ library
   exposed-modules:     A, B, C
   build-depends:       base >= 4.7 && < 5
                      , containers >= 0.5.6.2
+                     , primes >= 0.2.1
   ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
