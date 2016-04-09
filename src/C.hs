@@ -1,11 +1,10 @@
 module C where
 
-import           Control.Monad       (replicateM)
---import           Data.Char           (intToDigit)
+import           Control.Monad       (guard, replicateM)
 import           Data.List           (find)
-import           Data.Maybe          (catMaybes, fromJust)
-import           Data.Numbers.Primes (isPrime)
---import           Numeric             (showIntAtBase)
+import           Data.Maybe          (catMaybes, isJust)
+import           Data.Numbers.Primes (wheelSieve)
+import           Debug.Trace         (trace)
 
 toIntInBase :: Integer -> String -> Integer
 toIntInBase base ds = sum $ zipWith f [0..] (reverse ds)
@@ -19,35 +18,24 @@ toIntInBase base ds = sum $ zipWith f [0..] (reverse ds)
 data Jamcoin = Jamcoin String [Integer]
                deriving Show
 
-toJamcoin :: String -> Maybe Jamcoin
-toJamcoin digits@('1':ds) | last ds == '1'
-  = if all (not . isPrime) interps
-    then Just (Jamcoin digits (nonTrivialDivisor <$> interps))
-    else Nothing
-  where
-    interps = interpretations digits
-toJamcoin _ = Nothing
-
 interpretations :: String -> [Integer]
 interpretations digits = map (`toIntInBase` digits) [2..10]
 
-nonTrivialDivisor :: Integer -> Integer
-nonTrivialDivisor n = fromJust $ find (\i -> (n `mod` i) == 0) [2..n-2]
+possibleJamcoins :: Int -> [Jamcoin]
+possibleJamcoins n = let
+  primes = takeWhile (\i -> i * i < 10^n) $ wheelSieve 7
+  in do
+    middle <- replicateM (n - 2) "01"
+    let
+      digits = "1" ++ middle ++ "1"
+      primeFactor i = find (\j -> i `mod` j == 0) $ takeWhile (\j -> j * j < i) primes
+      primeFactors = primeFactor <$> interpretations digits
+      in do
+        guard $ all isJust primeFactors
+        return $ Jamcoin digits (catMaybes primeFactors)
 
-possibleJamcoins :: Integer -> [String]
-possibleJamcoins n = do
-  middle <- replicateM (fromIntegral (n - 2)) "01"
-  return $ "1" ++ middle ++ "1"
---possibleJamcoins n = map toBinString [min, (min+2)..max]
---  where
---    min = 1 + 2 ^(n-1)
---    max = 2^n - 1
---    toBinString ds = (showIntAtBase 2 intToDigit ds) ""
---
-
-findJamcoins :: Integer -> Integer -> [Jamcoin]
-findJamcoins j n = take (fromIntegral j) $ catMaybes $ toJamcoin <$> possibleJamcoins n
-
+findJamcoins :: Int -> Int -> [Jamcoin]
+findJamcoins j n = take j $ possibleJamcoins n
 
 solve :: String -> [Jamcoin]
 solve s = let [n, j] = read <$> words s in
@@ -56,7 +44,7 @@ solve s = let [n, j] = read <$> words s in
 runFile :: FilePath -> FilePath -> IO ()
 runFile inf outf = do
    _:inputs <- lines <$> readFile inf
-   writeFile outf $ unlines $ zipWith (curry output) [1..] (solve <$> inputs)
-     where output (i, res) = "Case #" ++ show i ++ ":\n" ++ unlines (showcoin <$> res)
-           showcoin (Jamcoin c ds) = c ++ " " ++ unwords (show <$> ds)
+   writeFile outf $ unlines $ zipWith output ([1..] :: [Int]) (solve <$> inputs)
+     where output i res = "Case #" ++ show i ++ ":\n" ++ unlines (showcoin <$> res)
+           showcoin co@(Jamcoin c ds) = trace (show co) $ c ++ " " ++ unwords (show <$> ds)
 
