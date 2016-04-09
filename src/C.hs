@@ -3,7 +3,7 @@ module C where
 import           Control.Monad       (guard, replicateM)
 import           Data.List           (find)
 import           Data.Maybe          (catMaybes, isJust)
-import           Data.Numbers.Primes (wheelSieve)
+import           Data.Numbers.Primes (primes)
 import           Debug.Trace         (trace)
 
 toIntInBase :: Integer -> String -> Integer
@@ -21,14 +21,17 @@ data Jamcoin = Jamcoin String [Integer]
 interpretations :: String -> [Integer]
 interpretations digits = map (`toIntInBase` digits) [2..10]
 
+
+somePrimes :: [Integer]
+somePrimes = take 1000 primes
+
 possibleJamcoins :: Int -> [Jamcoin]
 possibleJamcoins n = let
-  primes = takeWhile (\i -> i * i < 10^n) $ wheelSieve 7
   in do
     middle <- replicateM (n - 2) "01"
     let
       digits = "1" ++ middle ++ "1"
-      primeFactor i = find (\j -> i `mod` j == 0) $ takeWhile (\j -> j * j < i) primes
+      primeFactor i = find (\j -> i `mod` j == 0) $ takeWhile (\j -> j * j < i) somePrimes
       primeFactors = primeFactor <$> interpretations digits
       in do
         guard $ all isJust primeFactors
