@@ -14,35 +14,30 @@ toIntInBase base ds = sum $ zipWith f [0..] (reverse ds)
     f _ '0' = 0
     f _ c = error $ "bad char: " ++ show c
 
-
 data Jamcoin = Jamcoin String [Integer]
                deriving Show
 
 interpretations :: String -> [Integer]
 interpretations digits = map (`toIntInBase` digits) [2..10]
 
-
 somePrimes :: [Integer]
 somePrimes = take 1000 primes
 
 possibleJamcoins :: Int -> [Jamcoin]
-possibleJamcoins n = let
-  in do
-    middle <- replicateM (n - 2) "01"
-    let
-      digits = "1" ++ middle ++ "1"
-      primeFactor i = find (\j -> i `mod` j == 0) $ takeWhile (\j -> j * j < i) somePrimes
-      primeFactors = primeFactor <$> interpretations digits
-      in do
-        guard $ all isJust primeFactors
-        return $ Jamcoin digits (catMaybes primeFactors)
-
-findJamcoins :: Int -> Int -> [Jamcoin]
-findJamcoins j n = take j $ possibleJamcoins n
+possibleJamcoins n = do
+  middle <- replicateM (n - 2) "01"
+  let
+    digits = "1" ++ middle ++ "1"
+    primeFactor i = find (\j -> i `mod` j == 0) $ takeWhile (\j -> j * j < i) somePrimes
+    primeFactors = primeFactor <$> interpretations digits
+    in do
+      guard $ all isJust primeFactors
+      return $ Jamcoin digits (catMaybes primeFactors)
 
 solve :: String -> [Jamcoin]
 solve s = let [n, j] = read <$> words s in
-  findJamcoins j n
+  take j $ possibleJamcoins n
+
 
 runFile :: FilePath -> FilePath -> IO ()
 runFile inf outf = do
