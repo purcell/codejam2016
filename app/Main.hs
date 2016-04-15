@@ -1,6 +1,9 @@
 module Main where
 
 import           C
+import           System.Environment (getArgs)
 
 main :: IO ()
-main = runFile "/tmp/input1" "/tmp/output1"
+main = do
+  [input, output] <- getArgs
+  runFile input output
