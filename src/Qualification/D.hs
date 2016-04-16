@@ -1,5 +1,6 @@
-module D where
+module Qualification.D where
 
+import           Data.List (nub)
 
 
 data Tile = G | L
@@ -13,6 +14,8 @@ generations tiles = iterate transform tiles
     transform = concatMap replacement
     replacement L = tiles
     replacement G = replicate k G
+
+peekPositions k c = nub $ map (\initialOffset -> ((initialOffset - 1) * c * k) + initialOffset * c) [1..k]
 
 
 

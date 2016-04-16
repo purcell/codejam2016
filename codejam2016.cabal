@@ -15,7 +15,10 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     A, B, C
+  exposed-modules:     Qualification.A
+                     , Qualification.B
+                     , Qualification.C
+                     , Qualification.D
   build-depends:       base >= 4.7 && < 5
                      , containers >= 0.5.6.2
                      , primes >= 0.2.1

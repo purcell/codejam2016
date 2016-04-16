@@ -1,4 +1,4 @@
-module C where
+module Qualification.C where
 
 import           Control.Monad       (guard, replicateM)
 import           Data.List           (find)

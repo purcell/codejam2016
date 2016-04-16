@@ -1,4 +1,4 @@
-module B where
+module Qualification.B where
 
 import           Data.List (break)
 

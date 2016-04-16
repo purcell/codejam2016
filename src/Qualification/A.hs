@@ -1,4 +1,4 @@
-module A where
+module Qualification.A where
 
 import           Data.Maybe (listToMaybe)
 import           Data.Set   (Set)
