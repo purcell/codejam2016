@@ -20,6 +20,7 @@ library
                      , Qualification.C
                      , Qualification.D
                      , Round1A.A
+                     , Round1A.B
   build-depends:       base >= 4.7 && < 5
                      , containers >= 0.5.6.2
                      , primes >= 0.2.1
