@@ -1,6 +1,6 @@
 module Main where
 
-import           C
+import           Qualification.C
 import           System.Environment (getArgs)
 
 main :: IO ()
